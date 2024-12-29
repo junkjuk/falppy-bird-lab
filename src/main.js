@@ -54,7 +54,7 @@ scene("game", () => {
 			area(),
 		]);
 	}
-	loop(1.5, () => createPipes());
+
 	onUpdate("pipe", (pipe) => {
 		pipe.move(-300, 0);
 
@@ -81,8 +81,10 @@ scene("game", () => {
 })
 
 scene("gameover", (score, screenshot) => {
-	if (score > highScore) highScore = score;
-
+	if (score > highScore) {
+		highScore = score;
+		localStorage.setItem("highScore", highScore);
+	}
 	loadSprite("gameOverScreen", screenshot);
 	add([sprite("gameOverScreen", { width: width(), height: height() })]);
 
@@ -96,4 +98,25 @@ scene("gameover", (score, screenshot) => {
 	});
 })
 
-go("game")
+scene("startmenu", () => {
+	highScore = localStorage.getItem("highScore");
+	add([
+		sprite("bg", { width: width(), height: height()})
+	])
+
+	add([
+		text("High score: " + highScore, { size: 45 }),
+		pos(200, height() / 2 - 150),
+	]);
+
+	const start = add([
+		text("Start game", { size: 45 }),
+		pos(200, height() / 2),
+		area(),
+		body()
+	]);
+
+	start.onClick(() => go("game"))
+});
+
+go("startmenu")
